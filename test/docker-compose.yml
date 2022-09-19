@@ -1,0 +1,26 @@
+volumes:
+  test:
+  test1:
+
+services:
+  foo:
+    image: alpine
+    labels:
+      - "tech.embrio.backup.volumes=test"
+      - "tech.embrio.backup.stop"
+      - "tech.embrio.backup.pre=ls -alh"
+      - "tech.embrio.backup.post=echo 'BACKUP COMPLETED!'"
+    volumes:
+      - test:/test
+      - test1:/test1:ro
+    entrypoint: sh -c 'while true; do echo -n "This is a test of while loop"; date >> /test/file; sleep 5; done'
+
+  bar:
+    image: alpine
+    labels:
+      - "tech.embrio.backup.volumes=test1"
+      - "tech.embrio.backup.restore=echo 'RESTORE COMMAND!'"
+    volumes:
+      - test1:/test1
+    entrypoint: sh -c 'while true; do echo -n "This is a test of while loop"; date >> /test1/file; sleep 5; done'
+    

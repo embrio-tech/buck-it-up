@@ -1,0 +1,18 @@
+volumes:
+  volumes:
+
+services:
+  backup:
+    image: embriotech/buck-it-up
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - volumes:/backup/volumes
+
+    environment:
+      CRON_SCHEDULE: "18 4 * * *"
+      BACKUP_LABEL: "tech.embrio.backup"
+      GS_BUCKET_NAME: "eio-services-csb-dockerhost-backup"
+      #HEALTHCHECK_UUID: "healthchecks.io UUID"
+      #GS_SA_KEY: "Base64 encoded credentials.json" unnecessary if a workload identity is available
+
+
