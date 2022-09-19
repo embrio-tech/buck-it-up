@@ -43,19 +43,11 @@ After that you can perform backup of your `docker compose` by adding special lab
 
 ```yml
 version: "3"
-
 services:
   webserver:
     image: nginx
-    restart: always
     labels:
       - "tech.embrio.backup.volumes=invoiceninjaNginx"
-      - "traefik.enable=true"
-      - "traefik.http.routers.invoiceninja.rule=Host(`invoiceninja.magneto.embrio.tech`)"
-      - "traefik.http.routers.invoiceninja.entrypoints=websecure"
-      - "traefik.http.routers.invoiceninja.tls.certresolver=myresolver"
-      - "traefik.http.services.invoiceninja.loadbalancer.server.port=80"
-      - "traefik.docker.network=web"
     env_file: .env
     volumes:
       - invoiceninjaNginx:/etc/nginx/conf.d
@@ -63,29 +55,17 @@ services:
       - invoiceninjaStorage:/var/www/app/storage:ro
     depends_on:
       - app
-    expose:
-      - 80
-    networks:
-      - web
-      - default
 
   app:
     image: invoiceninja/invoiceninja:latest
-    env_file: .env
-    restart: always
     labels:
       - "tech.embrio.backup.volumes=invoiceninjaPublic invoiceninjaStorage"
     volumes:
       - invoiceninjaPublic:/var/www/app/public:rw,delegated
       - invoiceninjaStorage:/var/www/app/storage:rw,delegated
-    depends_on:
-      - db
-    networks:
-      - default
 
   db:
     image: mysql:5
-    restart: always
     labels:
       - tech.embrio.backup.volumes=invoiceninjaSqlBackup
       - tech.embrio.backup.pre=bash -c 'mysqldump --no-tablespaces -u $$MYSQL_USER -p$$MYSQL_PASSWORD $$MYSQL_DATABASE | gzip > /backup/latest.sql.gz'
@@ -94,14 +74,6 @@ services:
     volumes:
       - invoiceninjaSqldata:/var/lib/mysql:rw,delegated
       - invoiceninjaSqlBackup:/backup
-    networks:
-      - default
-
-networks:
-  default:
-  web:
-    external: true
-    name: web
 
 volumes:
   invoiceninjaPublic:
@@ -111,7 +83,21 @@ volumes:
   invoiceninjaNginx:
 ```
 
-This will back up the Grafana data volume, once per day, and write it to `./backups` with a filename like `backup-2018-11-27T16-51-56.tar.gz`.
+This will back up the invoiceninja data volumes defined in the label `tech.embrio.backup.volumes` for each service, once per day at 04:18AM, and upload backups to google cloud.
+
+Additionally special labels can be used on individual containers such as:
+
+`tech.embrio.backup.stop`
+: Stop container before performing the backup
+
+`tech.embrio.backup.pre`
+: Run a custom command in the container prior to backup
+
+`tech.embrio.backup.post`
+: Run a custom command in the container after the backup
+
+`tech.embrio.backup.restore`
+: Run a custom command in the container after restoring its volumes from object storage
 
 ## Configuring buckets
 
