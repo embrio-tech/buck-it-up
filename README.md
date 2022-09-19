@@ -1,5 +1,8 @@
 # Buck It Up – Simple Docker Volume Backups to Object Storage
 
+[![Publish Docker image](https://github.com/embrio-tech/buck-it-up/actions/workflows/docker-image.yml/badge.svg)](https://github.com/embrio-tech/buck-it-up/actions/workflows/docker-image.yml)
+[![embrio.tech](https://img.shields.io/static/v1?label=by&message=EMBRIO.tech&color=24ae5f)](https://embrio.tech)
+
 > Inspired from https://github.com/jareware/docker-volume-backup
 
 Docker image for performing simple backups of Docker volumes to cloud object storage. Main features:
@@ -33,7 +36,7 @@ services:
 
     environment:
       CRON_SCHEDULE: "18 4 * * *"
-      BACKUP_LABEL: "tech.embrio.backup"
+      BACKUP_LABEL: "buck.it.up"
       GS_BUCKET_NAME: "eio-services-csb-dockerhost-backup"
       #HEALTHCHECK_UUID: "healthchecks.io UUID"
       #GS_SA_KEY: "Base64 encoded credentials.json" unnecessary if a workload identity is available
@@ -47,7 +50,7 @@ services:
   webserver:
     image: nginx
     labels:
-      - "tech.embrio.backup.volumes=invoiceninjaNginx"
+      - "buck.it.up.volumes=invoiceninjaNginx"
     env_file: .env
     volumes:
       - invoiceninjaNginx:/etc/nginx/conf.d
@@ -59,7 +62,7 @@ services:
   app:
     image: invoiceninja/invoiceninja:latest
     labels:
-      - "tech.embrio.backup.volumes=invoiceninjaPublic invoiceninjaStorage"
+      - "buck.it.up.volumes=invoiceninjaPublic invoiceninjaStorage"
     volumes:
       - invoiceninjaPublic:/var/www/app/public:rw,delegated
       - invoiceninjaStorage:/var/www/app/storage:rw,delegated
@@ -67,9 +70,9 @@ services:
   db:
     image: mysql:5
     labels:
-      - tech.embrio.backup.volumes=invoiceninjaSqlBackup
-      - tech.embrio.backup.pre=bash -c 'mysqldump --no-tablespaces -u $$MYSQL_USER -p$$MYSQL_PASSWORD $$MYSQL_DATABASE | gzip > /backup/latest.sql.gz'
-      - tech.embrio.backup.restore=bash -c 'gunzip < /backup/latest.sql.gz | mysql -u $$MYSQL_USER -p$$MYSQL_PASSWORD $$MYSQL_DATABASE'
+      - buck.it.up.volumes=invoiceninjaSqlBackup
+      - buck.it.up.pre=bash -c 'mysqldump --no-tablespaces -u $$MYSQL_USER -p$$MYSQL_PASSWORD $$MYSQL_DATABASE | gzip > /backup/latest.sql.gz'
+      - buck.it.up.restore=bash -c 'gunzip < /backup/latest.sql.gz | mysql -u $$MYSQL_USER -p$$MYSQL_PASSWORD $$MYSQL_DATABASE'
     env_file: .env
     volumes:
       - invoiceninjaSqldata:/var/lib/mysql:rw,delegated
@@ -83,20 +86,20 @@ volumes:
   invoiceninjaNginx:
 ```
 
-This will back up the invoiceninja data volumes defined in the label `tech.embrio.backup.volumes` for each service, once per day at 04:18AM, and upload backups to google cloud.
+This will back up the invoiceninja data volumes defined in the label `buck.it.up.volumes` for each service, once per day at 04:18AM, and upload backups to google cloud.
 
 Additionally special labels can be used on individual containers such as:
 
-`tech.embrio.backup.stop`
+`buck.it.up.stop`
 : Stop container before performing the backup
 
-`tech.embrio.backup.pre`
+`buck.it.up.pre`
 : Run a custom command in the container prior to backup
 
-`tech.embrio.backup.post`
+`buck.it.up.post`
 : Run a custom command in the container after the backup
 
-`tech.embrio.backup.restore`
+`buck.it.up.restore`
 : Run a custom command in the container after restoring its volumes from object storage
 
 ## Configuring buckets
@@ -140,3 +143,9 @@ to restore ALL defined projects on the host execute:
 ```bash
 docker compose exec backup restore.sh ALL
 ```
+
+## :speech_balloon: Contact
+
+[EMBRIO.tech](https://embrio.tech)  
+[hello@embrio.tech](mailto:hello@embrio.tech)  
++41 44 552 00 75
