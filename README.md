@@ -42,7 +42,7 @@ services:
       #GS_SA_KEY: "Base64 encoded credentials.json" unnecessary if a workload identity is available
 ```
 
-After that you can perform backup of your `docker compose` by adding special labels. In this example we perform a backup of an invoiceninja instance:
+After that you can perform backup of your `docker compose` projects on the same host by adding special labels to your services. In this example we perform a backup of an invoiceninja instance:
 
 ```yml
 version: "3"
@@ -86,9 +86,9 @@ volumes:
   invoiceninjaNginx:
 ```
 
-This will back up the invoiceninja data volumes defined in the label `buck.it.up.volumes` for each service, once per day at 04:18AM, and upload backups to google cloud.
+This will back up the invoiceninja data volumes defined in the label `buck.it.up.volumes` for each service, once per day at 04:18AM, and upload backups to google cloud. For the db service, a pre command is used to save a db dump to a dedicated volume. The dump can be used with restore commands, to automatically re-seed the database.
 
-Additionally special labels can be used on individual containers such as:
+The following special labels can be used on individual containers (compose services) such as:
 
 `buck.it.up.stop`
 : Stop container before performing the backup
