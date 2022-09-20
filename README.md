@@ -17,10 +17,24 @@ Docker image for performing simple backups of Docker volumes to cloud object sto
 - Custom restore commands per service
 - Monitoring of backups with [healthchecks.io](https://healthchecks.io)
 
+## Recommended compose project/folder structure
+To achieve the best user experience with buck-it-up, we recommend to split your docker services related to a given project in different folders. An hypotetical example with 3 services is given below. There the `back-it-up` service is added in a dedicated project named `backup` to provide backup and restore services to all other workloads on the host.
+
+```bash
+.
+├── backup
+│   └── docker-compose.yml
+├── invoiceninja
+│   └── docker-compose.yml
+├── gitlab 
+│   └── docker-compose.yml
+└── bitwarden
+    └── docker-compose.yml
+```
+
 ## Backing up to GCS
 
 Set up the backup project with docker compose:
-
 ```yml
 version: "3"
 
@@ -42,7 +56,7 @@ services:
       #GS_SA_KEY: "Base64 encoded credentials.json" unnecessary if a workload identity is available
 ```
 
-After that you can perform backup of your `docker compose` projects on the same host by adding special labels to your services. In this example we perform a backup of an invoiceninja instance:
+Now you can perform backups of your `docker compose` projects on the same host by adding special labels to your services. In this example we demonstrate how to set-up backup for an invoiceninja installation:
 
 ```yml
 version: "3"
