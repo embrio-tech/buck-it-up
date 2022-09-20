@@ -3,7 +3,7 @@
 [![Publish Docker image](https://github.com/embrio-tech/buck-it-up/actions/workflows/docker-image.yml/badge.svg)](https://github.com/embrio-tech/buck-it-up/actions/workflows/docker-image.yml)
 [![embrio.tech](https://img.shields.io/static/v1?label=by&message=EMBRIO.tech&color=24ae5f)](https://embrio.tech)
 
-> Inspired from https://github.com/jareware/docker-volume-backup
+> Inspired by https://github.com/jareware/docker-volume-backup
 
 Docker image for performing simple backups of Docker volumes to cloud object storage. Main features:
 
