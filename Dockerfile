@@ -1,5 +1,5 @@
 FROM gcr.io/google.com/cloudsdktool/google-cloud-cli:alpine
-RUN apk --update --no-cache add jq tar bash
+RUN apk --update --no-cache add jq tar bash tzdata
 RUN gcloud components install gsutil
 COPY --chown=root:root ./docker-entrypoint.sh /
 COPY --chown=root:root ./log.sh /
