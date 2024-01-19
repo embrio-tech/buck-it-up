@@ -3,7 +3,7 @@ volumes:
 
 services:
   backup:
-    image: embriotech/buck-it-up
+    image: embriotech/buck-it-up:main
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - volumes:/backup/volumes
