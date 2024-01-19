@@ -61,7 +61,7 @@ done
 
 # BACKUP TO S3
 [[ -n "$AWS_BUCKET_NAME" ]] && log info "Uploading archives to S3 bucket: $AWS_BUCKET_NAME"
-[[ -n "$AWS_BUCKET_NAME" ]] && aws s3 cp --only-show-errors "$BACKUP_DIR/*.tar.gz" "s3://$AWS_BUCKET_NAME"
+[[ -n "$AWS_BUCKET_NAME" ]] && aws s3 cp --recursive --exclude '*' --include '*.tar.gz' --only-show-errors "$BACKUP_DIR" "s3://$AWS_BUCKET_NAME"
 
 log info "Removing backup archives..."
 rm "$BACKUP_DIR/"*.tar.gz
