@@ -54,9 +54,14 @@ for CONTAINER in $CONTAINERS; do
   
 done
 
+# BACKUP TO GCP
 [[ -n "$GS_SA_KEY" ]] && echo "$GS_SA_KEY" | base64 -d | gcloud --no-user-output-enabled auth activate-service-account --key-file=-
 [[ -n "$GS_BUCKET_NAME" ]] && log info "Uploading archives to GCP bucket: $GS_BUCKET_NAME"
 [[ -n "$GS_BUCKET_NAME" ]] && gsutil -q cp "$BACKUP_DIR/*.tar.gz" "gs://$GS_BUCKET_NAME"
+
+# BACKUP TO S3
+[[ -n "$AWS_BUCKET_NAME" ]] && log info "Uploading archives to S3 bucket: $AWS_BUCKET_NAME"
+[[ -n "$AWS_BUCKET_NAME" ]] && aws s3 cp --only-show-errors "$BACKUP_DIR/*.tar.gz" "s3://$AWS_BUCKET_NAME"
 
 log info "Removing backup archives..."
 rm "$BACKUP_DIR/"*.tar.gz
